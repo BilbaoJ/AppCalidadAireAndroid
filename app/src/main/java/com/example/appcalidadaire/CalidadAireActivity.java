@@ -41,15 +41,16 @@ public class CalidadAireActivity extends AppCompatActivity {
         double[][] matrizInterpolacion = new double[tamanio][tamanio];
 
         for (int i = 0; i < tamanio; i++) {
+
+            Estacion estacionInicio = estaciones.get(i);
+            Double longitud1 = estacionInicio.getLongitud();
+            Double latitud1 = estacionInicio.getLatitud();
+
             for (int j = 0; j < tamanio; j++) {
-                Estacion estacionInicio = estaciones.get(i);
+
                 Estacion estacionFin = estaciones.get(j);
-
-                double longitud1 = estacionInicio.longitud;
-                double latitud1 = estacionInicio.latitud;
-
-                double longitud2 = estacionFin.longitud;
-                double latitud2 = estacionFin.latitud;
+                Double longitud2 = estacionFin.getLongitud();
+                Double latitud2 = estacionFin.getLatitud();
 
                 double distancia = distanciaEntreDosPuntos(longitud1, latitud1, longitud2, latitud2);
                 double valorPhi = Math.sqrt((1 + Math.pow(distancia, 2)));
