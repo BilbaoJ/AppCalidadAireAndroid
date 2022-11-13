@@ -1,9 +1,9 @@
 package com.example.appcalidadaire;
 
 public class Estacion {
-    Double longitud;
-    Double latitud;
-    Double pm;
+    private Double longitud;
+    private Double latitud;
+    private Double pm;
 
     public Estacion(Double longitud, Double latitud, Double pm) {
         this.longitud = longitud;
