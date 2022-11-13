@@ -18,6 +18,35 @@ public class CalidadAireActivity extends AppCompatActivity {
         setContentView(R.layout.activity_calidad_aire);
         escribirDatosPorDefecto();
     }
+    
+    private double[][] calcularMatrizInterpolacion(ArrayList<Estacion> estaciones){
+        int tamanio = estaciones.size();
+        double[][] matrizInterpolacion = new double[tamanio][tamanio];
+
+        for (int i = 0; i < tamanio; i++) {
+            for (int j = 0; j < tamanio; j++) {
+                Estacion estacionInicio = estaciones.get(i);
+                Estacion estacionFin = estaciones.get(j);
+
+                double longitud1 = estacionInicio.longitud;
+                double latitud1 = estacionInicio.latitud;
+
+                double longitud2 = estacionFin.longitud;
+                double latitud2 = estacionFin.latitud;
+
+                double distancia = distanciaEntreDosPuntos(longitud1, latitud1, longitud2, latitud2);
+                double valorPhi = Math.sqrt((1 + Math.pow(distancia, 2)));
+                matrizInterpolacion[i][j] = valorPhi;
+            }
+        }
+        return matrizInterpolacion;
+    }
+
+    private double distanciaEntreDosPuntos(double x1, double y1, double x2, double y2){
+        double distanciaX = Math.pow((x1 - x2), 2);
+        double distanciaY = Math.pow((y1 - y2), 2);
+        return Math.sqrt((distanciaX + distanciaY));
+    }
 
     private ArrayList<Estacion> leerEstaciones(){
         ArrayList<Estacion> estaciones = new ArrayList<>();
