@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="50dp"
+    android:background="@color/azul_siata"
     android:gravity="center_horizontal"
     tools:context=".CalidadAireActivity">
     <TextView
@@ -15,20 +16,27 @@
         android:text="@string/titulo"
         android:textSize="30sp"
         android:layout_marginBottom="10dp"
+        android:textColor="@color/white"
         />
     <EditText
         android:id="@+id/etLongitud"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
+        android:inputType="text"
         android:gravity="center"
+        android:textColorHint="@color/white"
+        android:background="@drawable/estilo_edit_text"
+        android:textColor="@color/white"
         android:hint="Longitud"/>
     <EditText
         android:id="@+id/etLatitud"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
+        android:inputType="text"
         android:gravity="center"
+        android:textColorHint="@color/white"
+        android:background="@drawable/estilo_edit_text"
+        android:textColor="@color/white"
         android:hint="Latitud"/>
     <Button
         android:id="@+id/btnConsultar"
@@ -46,12 +54,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nivel de PM2.5"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
             android:textSize="20sp"/>
         <TextView
             android:id="@+id/tvResultado"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0.0"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
             android:textSize="60sp"/>
     </LinearLayout>
     <GridLayout
@@ -64,9 +76,9 @@
             android:layout_height="60dp"
             android:gravity="center_vertical"
             android:enabled="false"
-            android:src="@drawable/ic_nubeCalidad_foreground"
+            android:src="@drawable/ic_nube_calidad_aire_foreground"
             android:background="#00FFFFFF"
-            app:tint="@color/azul_oscuro_siata"
+            app:tint="#EDE8E8"
             />
         <TextView
             android:id="@+id/tvDescripcionResultado"
@@ -74,6 +86,8 @@
             android:layout_height="80dp"
             android:gravity="center_vertical"
             android:text="Descripcion"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
             android:textSize="25sp" />
     </GridLayout>
 </LinearLayout>

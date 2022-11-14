@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class CalidadAireActivity extends AppCompatActivity {
@@ -39,31 +40,29 @@ public class CalidadAireActivity extends AppCompatActivity {
                 double[][] matrizA = calcularMatrizInterpolacion(estaciones);
                 double[] lambdas = metodoGauss(matrizA, matrizb);
                 double resultado = interpolacion(longitud, latitud, lambdas, estaciones);
-                tvResultado.setText(resultado+"");
+                DecimalFormat df = new DecimalFormat("#.0");
+                tvResultado.setText(df.format(resultado)+"");
                 cambiarColorNube(resultado);
             }
         });
     }
 
     private void cambiarColorNube(double resultado){
-        if(resultado >= 0D && resultado <= 50D){
-            btnColorResultado.setColorFilter(R.color.verde_siata);
+        if(resultado >= 0D && resultado <= 12D){
+            btnColorResultado.setColorFilter(getApplicationContext().getResources().getColor(R.color.verde_siata));
             tvDescripcionResultado.setText("Buena");
-        }else if(resultado >= 51D && resultado <= 100D){
-            btnColorResultado.setColorFilter(R.color.amarillo_siata);
+        }else if(resultado >= 13D && resultado <= 37D){
+            btnColorResultado.setColorFilter(getApplicationContext().getResources().getColor(R.color.amarillo_siata));
             tvDescripcionResultado.setText("Moderada");
-        }else if(resultado >= 101D && resultado <= 150D){
-            btnColorResultado.setColorFilter(R.color.naranja_siata);
+        }else if(resultado >= 38D && resultado <= 55D){
+            btnColorResultado.setColorFilter(getApplicationContext().getResources().getColor(R.color.naranja_siata));
             tvDescripcionResultado.setText("Dañina a la salud grupos sensibles");
-        }else if(resultado >= 151D && resultado <= 200D){
-            btnColorResultado.setColorFilter(R.color.rojo_siata);
+        }else if(resultado >= 56D && resultado <= 150D){
+            btnColorResultado.setColorFilter(getApplicationContext().getResources().getColor(R.color.rojo_siata));
             tvDescripcionResultado.setText("Dañina a la salud");
-        }else if(resultado >= 201D && resultado <= 300D){
-            btnColorResultado.setColorFilter(R.color.morado_siata);
-            tvDescripcionResultado.setText("Muy dañina a la salud");
         }else{
-            btnColorResultado.setColorFilter(R.color.cafe_siata);
-            tvDescripcionResultado.setText("Peligrosa");
+            btnColorResultado.setColorFilter(getApplicationContext().getResources().getColor(R.color.morado_siata));
+            tvDescripcionResultado.setText("Muy dañina a la salud");
         }
     }
 
@@ -127,7 +126,7 @@ public class CalidadAireActivity extends AppCompatActivity {
         try {
             DBHelper helper = new DBHelper(this, "CalidadAire", null, 1);
             SQLiteDatabase db = helper.getWritableDatabase();
-            String SQL = "select longitud, latitud, pm from Preguntas";
+            String SQL = "select longitud, latitud, pm from Estaciones";
 
             Cursor c = db.rawQuery(SQL, null);
             if (c.moveToFirst()){
@@ -173,7 +172,7 @@ public class CalidadAireActivity extends AppCompatActivity {
 
     private double[] resolverMatriz(@NonNull double[][] matrizReducida){
         ArrayList<Double> lambdas = new ArrayList<>();
-        lambdas.add(matrizReducida[matrizReducida.length - 1][matrizReducida[0].length]);
+        lambdas.add(matrizReducida[matrizReducida.length - 1][matrizReducida[0].length - 1]);
         for(int i = matrizReducida.length-2; i > -1; i--){
             double ladoDerechoEcuacion = 0D;
             Integer contadorLambdas = 0;
@@ -205,9 +204,10 @@ public class CalidadAireActivity extends AppCompatActivity {
             double[] nuevaFila = aumentarFila(fila, b[i]);
             matrizAumentada[i] = nuevaFila;
         }
+
         for (int j = 0; j < matrizAumentada[0].length; j++){
-            double numeroPivote = matrizAumentada[j][j];
             if(!(j+1 == matrizAumentada[0].length)){
+                double numeroPivote = matrizAumentada[j][j];
                 for (int i = j+1; i < matrizAumentada.length; i++){
                     numeroPivote *= matrizAumentada[i][j] * -1;
                     matrizAumentada[i][j] += numeroPivote;
