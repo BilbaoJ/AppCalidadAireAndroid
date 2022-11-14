@@ -7,17 +7,72 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class CalidadAireActivity extends AppCompatActivity {
 
+    EditText etLongitud, etLatitud;
+    Button btnConsultar;
+    ImageButton btnColorResultado;
+    TextView tvResultado, tvDescripcionResultado;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calidad_aire);
+        conectar();
         escribirDatosPorDefecto();
+        btnConsultar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                double longitud = Double.parseDouble(etLongitud.getText().toString());
+                double latitud =  Double.parseDouble(etLatitud.getText().toString());
+                ArrayList<Estacion> estaciones = leerEstaciones();
+                double[] matrizb = crearMatrizb(estaciones);
+                double[][] matrizA = calcularMatrizInterpolacion(estaciones);
+                double[] lambdas = metodoGauss(matrizA, matrizb);
+                double resultado = interpolacion(longitud, latitud, lambdas, estaciones);
+                tvResultado.setText(resultado+"");
+                cambiarColorNube(resultado);
+            }
+        });
+    }
+
+    private void cambiarColorNube(double resultado){
+        if(resultado >= 0D && resultado <= 50D){
+            btnColorResultado.setColorFilter(R.color.verde_siata);
+            tvDescripcionResultado.setText("Buena");
+        }else if(resultado >= 51D && resultado <= 100D){
+            btnColorResultado.setColorFilter(R.color.amarillo_siata);
+            tvDescripcionResultado.setText("Moderada");
+        }else if(resultado >= 101D && resultado <= 150D){
+            btnColorResultado.setColorFilter(R.color.naranja_siata);
+            tvDescripcionResultado.setText("Dañina a la salud grupos sensibles");
+        }else if(resultado >= 151D && resultado <= 200D){
+            btnColorResultado.setColorFilter(R.color.rojo_siata);
+            tvDescripcionResultado.setText("Dañina a la salud");
+        }else if(resultado >= 201D && resultado <= 300D){
+            btnColorResultado.setColorFilter(R.color.morado_siata);
+            tvDescripcionResultado.setText("Muy dañina a la salud");
+        }else{
+            btnColorResultado.setColorFilter(R.color.cafe_siata);
+            tvDescripcionResultado.setText("Peligrosa");
+        }
+    }
+
+    private double[] crearMatrizb(ArrayList<Estacion> estaciones){
+        double[] pm = new double[estaciones.size()];
+        for (int i = 0; i<pm.length; i++) {
+            pm[i] = estaciones.get(i).getPm();
+        }
+        return pm;
     }
 
     private double interpolacion(double longitud, double latitud, double[] lambdas,
@@ -110,6 +165,70 @@ public class CalidadAireActivity extends AppCompatActivity {
         }
     }
 
+    private double[] metodoGauss(double[][] A, double[] b){
+        double[][] matrizReducida = reducirMatriz(A,b);
+        double[] lambdas = resolverMatriz(matrizReducida);
+        return lambdas;
+    }
+
+    private double[] resolverMatriz(@NonNull double[][] matrizReducida){
+        ArrayList<Double> lambdas = new ArrayList<>();
+        lambdas.add(matrizReducida[matrizReducida.length - 1][matrizReducida[0].length]);
+        for(int i = matrizReducida.length-2; i > -1; i--){
+            double ladoDerechoEcuacion = 0D;
+            Integer contadorLambdas = 0;
+            for(int j = matrizReducida[0].length-1; j > -1; j--){
+                if(j == matrizReducida[0].length-1){
+                    ladoDerechoEcuacion = matrizReducida[i][j];
+                    continue;
+                }
+                if(!(matrizReducida[i][j] == 1.0)){
+                    ladoDerechoEcuacion -= matrizReducida[i][j] * lambdas.get(contadorLambdas);
+                    contadorLambdas++;
+                }else{
+                    lambdas.add(ladoDerechoEcuacion);
+                    break;
+                }
+            }
+        }
+        double[] arrayLambdas = new double[lambdas.size()];
+        for(int i = 0; i<arrayLambdas.length; i++){
+            arrayLambdas[i] = lambdas.get(i);
+        }
+        return arrayLambdas;
+    }
+
+    private double[][] reducirMatriz(double[][] A, double[] b){
+        double[][] matrizAumentada = new double[A.length][A[0].length + 1];
+        for (int i = 0; i < A.length; i++){
+            double[] fila = A[i];
+            double[] nuevaFila = aumentarFila(fila, b[i]);
+            matrizAumentada[i] = nuevaFila;
+        }
+        for (int j = 0; j < matrizAumentada[0].length; j++){
+            double numeroPivote = matrizAumentada[j][j];
+            if(!(j+1 == matrizAumentada[0].length)){
+                for (int i = j+1; i < matrizAumentada.length; i++){
+                    numeroPivote *= matrizAumentada[i][j] * -1;
+                    matrizAumentada[i][j] += numeroPivote;
+                }
+            }
+        }
+        return matrizAumentada;
+    }
+
+    private double[] aumentarFila(double[] fila, double numeroAColocar){
+        double[] nuevaFila = new double[fila.length + 1];
+        for (int j = 0; j<nuevaFila.length; j++){
+            if(j == fila.length){
+                nuevaFila[j] = numeroAColocar;
+                break;
+            }
+            nuevaFila[j] = fila[j];
+        }
+        return nuevaFila;
+    }
+
     private void escribirDatosPorDefecto(){
         try {
             DBHelper helper = new DBHelper(this, "CalidadAire", null, 1);
@@ -171,63 +290,12 @@ public class CalidadAireActivity extends AppCompatActivity {
         }
     }
 
-    private ArrayList<Double> metodoGauss(Double[][] A, Double[] b){
-        Double[][] matrizReducida = reducirMatriz(A,b);
-        ArrayList<Double> lambdas = resolverMatriz(matrizReducida);
-        return lambdas;
-    }
-
-    private ArrayList<Double> resolverMatriz(@NonNull Double[][] matrizReducida){
-        ArrayList<Double> lambdas = new ArrayList<>();
-        lambdas.add(matrizReducida[matrizReducida.length - 1][matrizReducida[0].length]);
-        for(int i = matrizReducida.length-2; i > -1; i--){
-            Double ladoDerechoEcuacion = 0D;
-            Integer contadorLambdas = 0;
-            for(int j = matrizReducida[0].length-1; j > -1; j--){
-                if(j == matrizReducida[0].length-1){
-                    ladoDerechoEcuacion = matrizReducida[i][j];
-                    continue;
-                }
-                if(!(matrizReducida[i][j] == 1.0)){
-                    ladoDerechoEcuacion -= matrizReducida[i][j] * lambdas.get(contadorLambdas);
-                    contadorLambdas++;
-                }else{
-                    lambdas.add(ladoDerechoEcuacion);
-                    break;
-                }
-            }
-        }
-        return lambdas;
-    }
-
-    private Double[][] reducirMatriz(Double[][] A, Double[] b){
-        Double[][] matrizAumentada = new Double[A.length][A[0].length + 1];
-        for (int i = 0; i < A.length; i++){
-            Double[] fila = A[i];
-            Double[] nuevaFila = aumentarFila(fila, b[i]);
-            matrizAumentada[i] = nuevaFila;
-        }
-        for (int j = 0; j < matrizAumentada[0].length; j++){
-            Double numeroPivote = matrizAumentada[j][j];
-            if(!(j+1 == matrizAumentada[0].length)){
-                for (int i = j+1; i < matrizAumentada.length; i++){
-                    numeroPivote *= matrizAumentada[i][j] * -1;
-                    matrizAumentada[i][j] += numeroPivote;
-                }
-            }
-        }
-        return matrizAumentada;
-    }
-
-    private Double[] aumentarFila(Double[] fila, Double numeroAColocar){
-        Double[] nuevaFila = new Double[fila.length + 1];
-        for (int j = 0; j<nuevaFila.length; j++){
-            if(j == fila.length){
-                nuevaFila[j] = numeroAColocar;
-                break;
-            }
-            nuevaFila[j] = fila[j];
-        }
-        return nuevaFila;
+    private void conectar(){
+        etLongitud = findViewById(R.id.etLongitud);
+        etLatitud = findViewById(R.id.etLatitud);
+        btnConsultar = findViewById(R.id.btnConsultar);
+        btnColorResultado = findViewById(R.id.btnColorResultado);
+        tvResultado = findViewById(R.id.tvResultado);
+        tvDescripcionResultado = findViewById(R.id.tvDescripcionResultado);
     }
 }

@@ -7,7 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Paleta de colores SIATA-->
     <color name="azul_siata">#3FA4B4</color>
     <color name="amarillo_siata">#F9DB50</color>
     <color name="azul_oscuro_siata">#081F2D</color>
+    <color name="verde_siata">#4CAF50</color>
+    <color name="naranja_siata">#FF5722</color>
+    <color name="rojo_siata">#DF0B0B</color>
+    <color name="morado_siata">#FF6200EE</color>
+    <color name="cafe_siata">#833A23</color>
 </resources>

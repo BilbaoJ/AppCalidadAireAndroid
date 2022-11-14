@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Calidad de Aire</string>
+    <string name="titulo">Ingresa los valores para conocer la calidad del aire en tu ubicación</string>
 </resources>
