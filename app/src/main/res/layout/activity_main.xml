@@ -4,8 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/azul_siata"
     android:orientation="vertical"
     tools:context=".MainActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:src="@drawable/bienvenido"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="70dp"
+        android:src="@drawable/siata_logo" />
+
+    <ImageButton
+        android:id="@+id/btnCalidadAire"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="70dp"
+        android:background="#00FFFFFF"
+        android:src="@drawable/boton_calidad_aire"/>
 
 
 </LinearLayout>
