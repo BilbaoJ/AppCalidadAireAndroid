@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Archivos UdeM/Semestres/Semestre 7/Desarrollo de aplicaciones moviles/Trabajo para final de semestre/AppCalidadAireAndroid/app/src/main/res/layout/activity_calidad_aire.xml" value="0.33" />
+        <entry key="..\:/Archivos UdeM/Semestres/Semestre 7/Desarrollo de aplicaciones moviles/Trabajo para final de semestre/AppCalidadAireAndroid/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Archivos UdeM/Semestres/Semestre 7/Desarrollo de aplicaciones moviles/Trabajo para final de semestre/AppCalidadAireAndroid/app/src/main/res/mipmap-anydpi-v26/ic_nubeCalidad.xml" value="0.1935" />
+      </map>
+    </option>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
