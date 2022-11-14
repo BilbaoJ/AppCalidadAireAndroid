@@ -1,5 +1,6 @@
 package com.example.appcalidadaire;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
@@ -168,5 +169,65 @@ public class CalidadAireActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Ocurrió un error: "+e.getMessage(),
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    private ArrayList<Double> metodoGauss(Double[][] A, Double[] b){
+        Double[][] matrizReducida = reducirMatriz(A,b);
+        ArrayList<Double> lambdas = resolverMatriz(matrizReducida);
+        return lambdas;
+    }
+
+    private ArrayList<Double> resolverMatriz(@NonNull Double[][] matrizReducida){
+        ArrayList<Double> lambdas = new ArrayList<>();
+        lambdas.add(matrizReducida[matrizReducida.length - 1][matrizReducida[0].length]);
+        for(int i = matrizReducida.length-2; i > -1; i--){
+            Double ladoDerechoEcuacion = 0D;
+            Integer contadorLambdas = 0;
+            for(int j = matrizReducida[0].length-1; j > -1; j--){
+                if(j == matrizReducida[0].length-1){
+                    ladoDerechoEcuacion = matrizReducida[i][j];
+                    continue;
+                }
+                if(!(matrizReducida[i][j] == 1.0)){
+                    ladoDerechoEcuacion -= matrizReducida[i][j] * lambdas.get(contadorLambdas);
+                    contadorLambdas++;
+                }else{
+                    lambdas.add(ladoDerechoEcuacion);
+                    break;
+                }
+            }
+        }
+        return lambdas;
+    }
+
+    private Double[][] reducirMatriz(Double[][] A, Double[] b){
+        Double[][] matrizAumentada = new Double[A.length][A[0].length + 1];
+        for (int i = 0; i < A.length; i++){
+            Double[] fila = A[i];
+            Double[] nuevaFila = aumentarFila(fila, b[i]);
+            matrizAumentada[i] = nuevaFila;
+        }
+        for (int j = 0; j < matrizAumentada[0].length; j++){
+            Double numeroPivote = matrizAumentada[j][j];
+            if(!(j+1 == matrizAumentada[0].length)){
+                for (int i = j+1; i < matrizAumentada.length; i++){
+                    numeroPivote *= matrizAumentada[i][j] * -1;
+                    matrizAumentada[i][j] += numeroPivote;
+                }
+            }
+        }
+        return matrizAumentada;
+    }
+
+    private Double[] aumentarFila(Double[] fila, Double numeroAColocar){
+        Double[] nuevaFila = new Double[fila.length + 1];
+        for (int j = 0; j<nuevaFila.length; j++){
+            if(j == fila.length){
+                nuevaFila[j] = numeroAColocar;
+                break;
+            }
+            nuevaFila[j] = fila[j];
+        }
+        return nuevaFila;
     }
 }
